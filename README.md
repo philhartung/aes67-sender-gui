@@ -1,4 +1,4 @@
-# AES67 Monitor App
+# AES67 Sender GUI
 Cross plattform app to provide a local soundcard input in a AES67 network. This app is under early development.
 
 Here is a screenshots of how the app looks:
