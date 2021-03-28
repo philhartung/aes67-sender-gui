@@ -1,0 +1,9 @@
+body{
+	padding: 15px;
+	user-select: none;
+	overflow-x: hidden;
+}
+
+[v-cloak] {
+	display:none;
+}

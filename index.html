@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>AES67 Sender GUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+		<link rel="stylesheet" href="css/app.css">
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div id="errors" class="alert alert-danger" v-if="errors.length > 0">
+				<span v-for="error in errors">{{ error }}<br /></span>
+			</div>
+
+			<div class="row">
+				<div class="col">
+					<div class="form-group">
+						<label for="name">Stream Name</label>
+						<input type="text" class="form-control" id="name" v-model="settings.name" :disabled="active" />
+					</div>
+
+					<div class="form-group">
+						<label for="audiodevice">Audio Device</label>
+						<select class="form-control" id="audiodevice" v-model="settings.device" :disabled="active">
+							<option v-for="device in audiodevices" v-bind:value="device.id">{{ device.name }}</option>
+						</select>
+					</div>
+		
+					<div class="form-group">
+						<label for="networkdevice">Network Interface</label>
+						<select class="form-control" id="networkdevice" v-model="settings.addr" :disabled="active">
+							<option v-for="device in network" v-bind:value="device.addr">{{ device.name }}: {{device.addr}}</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="multicast">Multicast Address</label>
+						<input type="text" class="form-control" id="multicast" v-model="settings.mcast" :disabled="active" />
+					</div>
+
+					<button class="btn btn-sm" v-on:click="startAudio()" v-bind:class="{'btn-success': !active, 'btn-danger': active}" v-html="active ? 'Stop' : 'Start'">Start</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="js/jquery.js"></script>
+		<script src="js/bootstrap/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/app.js"></script>
+	</body>
+</html>

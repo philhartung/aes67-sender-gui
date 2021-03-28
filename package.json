@@ -1,0 +1,20 @@
+{
+  "name": "aes67-sender-gui",
+  "version": "0.2.0",
+  "description": "AES67-Sender-Gui",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-packager . AES67-Sender --overwrite --icon=./assets/icon"
+  },
+  "devDependencies": {
+    "electron": "^9.4.4",
+    "electron-packager": "^15.2.0"
+  },
+  "dependencies": {
+    "audify": "^1.5.2",
+    "jquery": "^3.5.1",
+    "vue": "^2.6.11",
+    "ptpv2": "^1.0.6"
+  }
+}

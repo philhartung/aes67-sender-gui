@@ -1,0 +1,6 @@
+AES67-Sender-darwin-x64/
+AES67-Sender-win32-x64/
+AES67-Sender-linux-x64/
+node_modules/
+package-lock.json
+.DS_Store
