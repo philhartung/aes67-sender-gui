@@ -18,13 +18,15 @@ let app = new Vue({
 			if(!app.active){
 				//determine audio channels
 				let audioChannels = 2;
+				let deviceName = '';
 				for(var i = 0; i < app.audiodevices.length; i++){
 					if(app.audiodevices[i].id == app.settings.device){
 						audioChannels = Math.min(app.audiodevices[i].channels, 8);
+						deviceName = app.audiodevices[i].name;
 					}
 				}
 
-				aes67.start(app.settings.audioapi, app.settings.device, audioChannels, app.settings.name, app.settings.mcast, app.settings.addr);
+				aes67.start(app.settings.audioapi, app.settings.device, audioChannels, app.settings.name, app.settings.mcast, app.settings.addr, deviceName);
 				app.active = true;
 			}else{
 				app.active = false;

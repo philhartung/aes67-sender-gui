@@ -1,10 +1,11 @@
+const { info } = require('console');
 var dgram = require('dgram');
 var socket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 
 let hash = Math.floor(Math.random() * 65536);
 let active = true;
 
-var constructSDPMsg = function(addr, multicastAddr, samplerate, channels, encoding, name, sessID, sessVersion, ptpMaster){
+var constructSDPMsg = function(addr, multicastAddr, samplerate, channels, encoding, name, sessID, sessVersion, ptpMaster, info){
 	var sapHeader = Buffer.alloc(8);
 	var sapContentType = Buffer.from('application/sdp\0');
 	var ip = addr.split('.');
@@ -30,6 +31,7 @@ var constructSDPMsg = function(addr, multicastAddr, samplerate, channels, encodi
 		'a=clock-domain:PTPv2 0',
 		'm=audio 5004 RTP/AVP 96',
 		'a=rtpmap:96 '+encoding+'/'+samplerate+'/'+channels,
+		'i='+info,
 		'a=sync-time:0',
 		'a=framecount:48',
 		'a=ptime:1',
@@ -44,8 +46,8 @@ var constructSDPMsg = function(addr, multicastAddr, samplerate, channels, encodi
 	return Buffer.concat([sapHeader, sapContentType, sdpBody]);
 }
 
-exports.start = function(addr, multicastAddr, samplerate, channels, encoding, name, sessID, sessVersion, ptpMaster){
-	sdpMSG = constructSDPMsg(addr, multicastAddr, samplerate, channels, encoding, name, sessID, sessVersion, ptpMaster);
+exports.start = function(addr, multicastAddr, samplerate, channels, encoding, name, sessID, sessVersion, ptpMaster, info){
+	sdpMSG = constructSDPMsg(addr, multicastAddr, samplerate, channels, encoding, name, sessID, sessVersion, ptpMaster, info);
 
 	socket.bind(9875, function(){
 		socket.setMulticastInterface(addr);

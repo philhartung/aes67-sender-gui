@@ -28,7 +28,7 @@ let offsetSum = 0;
 let count = 0;
 let correctTimestamp = true;
 
-exports.start = function(audioAPI, audioDevice, audioChannels, streamName, multicastAddress, deciveAddress){
+exports.start = function(audioAPI, audioDevice, audioChannels, streamName, multicastAddress, deciveAddress, info){
 	addr = deciveAddress;
 	aes67Multicast = multicastAddress;
 	rtAudio = new RtAudio(audioAPI);
@@ -42,7 +42,7 @@ exports.start = function(audioAPI, audioDevice, audioChannels, streamName, multi
 
 		//start audio and sdp
 		rtAudio.start();
-		sdp.start(addr, aes67Multicast, samplerate, audioChannels, encoding, streamName, sessID, sessVersion, ptpMaster);
+		sdp.start(addr, aes67Multicast, samplerate, audioChannels, encoding, streamName, sessID, sessVersion, ptpMaster, info);
 	});
 
 	//RTP implementation
