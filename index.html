@@ -13,36 +13,42 @@
 			<div id="errors" class="alert alert-danger" v-if="errors.length > 0">
 				<span v-for="error in errors">{{ error }}<br /></span>
 			</div>
-
 			<div class="row">
 				<div class="col">
-					<div class="form-group">
-						<label for="name">Stream Name</label>
-						<input type="text" class="form-control" id="name" v-model="settings.name" :disabled="active" />
-					</div>
-
-					<div class="form-group">
-						<label for="audiodevice">Audio Device</label>
-						<select class="form-control" id="audiodevice" v-model="settings.device" :disabled="active">
-							<option v-for="device in audiodevices" v-bind:value="device.id">{{ device.name }}</option>
-						</select>
-					</div>
-		
-					<div class="form-group">
-						<label for="networkdevice">Network Interface</label>
-						<select class="form-control" id="networkdevice" v-model="settings.addr" :disabled="active">
+					<h5>Network Interface</h5>
+					<form class="form-inline">
+						<select class="form-control" id="networkdevice" v-model="settings.addr">
 							<option v-for="device in network" v-bind:value="device.addr">{{ device.name }}: {{device.addr}}</option>
 						</select>
+						<button class="btn btn-primary" id="applyNetworkSettings" v-on:click="setNetworkInterface()" disabled style="margin-left: 10px;">Apply</button>
+					</form>
+				</div>
+				<div class="col">
+					<h5>PTP Status</h5>
+					<div>
+						PTP Status: <span class="badge" v-bind:class="{ 'badge-success': ptp.sync, 'btn-danger': !ptp.sync && ptp.master == '', 'btn-warning': !ptp.sync && ptp.master != '' }" v-html="ptp.sync ? 'Locked' : (ptp.master =='' ? 'Unlocked' : 'Locking')">Locked</span><br />
+						<span>PTP Master: {{ptp.master == '' ? 'None' : ptp.master.toUpperCase().split(':')[0]}}</span><br />
 					</div>
-
-					<div class="form-group">
-						<label for="multicast">Multicast Address</label>
-						<input type="text" class="form-control" id="multicast" v-model="settings.mcast" :disabled="active" />
-					</div>
-
-					<button class="btn btn-sm" v-on:click="startAudio()" v-bind:class="{'btn-success': !active, 'btn-danger': active}" v-html="active ? 'Stop' : 'Start'">Start</button>
 				</div>
 			</div>
+			
+			<table class="table table-sm">
+				<h5>Audiodevices</h5>
+				<thead>
+					<th>Device Name</th>
+					<th>Channel #</th>
+					<th>Multicast Address</th>
+					<th></th>
+				</thead>
+				<tbody>
+					<tr v-for="device in audiodevices">
+						<td>{{ device.name }}</td>
+						<td>{{ device.channels }}</td>
+						<td>{{ device.multicast }}</td>
+						<td><button class="btn btn-success btn-sm" v-on:click="startAudio(device)" v-bind:class="{ 'badge-success': !device.enabled, 'btn-danger': device.enabled }" v-html="device.enabled ? 'Disable' : 'Enable'">Enable</button></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 
 		<script src="js/jquery.js"></script>

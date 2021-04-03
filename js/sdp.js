@@ -28,12 +28,9 @@ var constructSDPMsg = function(addr, multicastAddr, samplerate, channels, encodi
 		's='+name,
 		'c=IN IP4 '+multicastAddr+'/32',
 		't=0 0',
-		'a=clock-domain:PTPv2 0',
 		'm=audio 5004 RTP/AVP 96',
 		'a=rtpmap:96 '+encoding+'/'+samplerate+'/'+channels,
 		'i='+info,
-		'a=sync-time:0',
-		'a=framecount:48',
 		'a=ptime:1',
 		'a=mediaclk:direct=0',
 		'a=ts-refclk:ptp=IEEE1588-2008:'+ptpMaster,
@@ -51,12 +48,12 @@ exports.start = function(addr, multicastAddr, samplerate, channels, encoding, na
 
 	socket.bind(9875, function(){
 		socket.setMulticastInterface(addr);
-		socket.send(sdpMSG, 9875, '239.255.255.255', function(err){});
+		socket.send(sdpMSG, 9875, '239.255.255.255', function(err){console.log(err);});
 	});
 	
 	setInterval(function(){
 		if(active){
-			socket.send(sdpMSG, 9875, '239.255.255.255', function(err){});
+			socket.send(sdpMSG, 9875, '239.255.255.255', function(err){console.log(err);});
 		}
 	}, 30*1000);
 

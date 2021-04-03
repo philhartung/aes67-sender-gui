@@ -1,8 +1,9 @@
 const Vue = require('vue/dist/vue.js');
 const os = require('os');
 const { RtAudio, RtAudioApi } = require('audify');
-const sdp = require('./js/sdp');
-const aes67 = require('./js/aes67');
+// const sdp = require('./js/sdp');
+// const aes67 = require('./js/aes67');
+const ptp = require('./js/ptp');
 
 let app = new Vue({
 	el: '#app',
@@ -10,27 +11,26 @@ let app = new Vue({
 		errors: [],
 		settings: {},
 		network: [],
-		audiodevices: [],
-		active: false
+		ptp: {master: '', sync: false},
+		audiodevices: []
 	},
 	methods: {
-		startAudio: function(){
-			if(!app.active){
-				//determine audio channels
-				let audioChannels = 2;
-				let deviceName = '';
-				for(var i = 0; i < app.audiodevices.length; i++){
-					if(app.audiodevices[i].id == app.settings.device){
-						audioChannels = Math.min(app.audiodevices[i].channels, 8);
-						deviceName = app.audiodevices[i].name;
-					}
-				}
+		startAudio: function(device){
+			let index = app.audiodevices.indexOf(device);
 
-				aes67.start(app.settings.audioapi, app.settings.device, audioChannels, app.settings.name, app.settings.mcast, app.settings.addr, deviceName);
-				app.active = true;
+			if(app.audiodevices[index].enabled){
+				console.log('Stop', device.name);
+				app.audiodevices[index].enabled = false;
 			}else{
-				app.active = false;
-				aes67.stop();
+				console.log('Start', device.name);
+				app.audiodevices[index].enabled = true;
+			}
+		},
+		setNetworkInterface: function(){
+			if(app.settings.addr != app.ptp.addr){
+				app.ptp.addr = app.settings.addr;
+				ptp.init(app.settings.addr, 0, function(){});
+				$('#applyNetworkSettings').prop('disabled', true);
 			}
 		}
 	}
@@ -61,7 +61,6 @@ if(addresses.length == 0){
 }
 
 app.settings.addr = addresses[0].addr;
-app.settings.mcast = '239.69.'+addresses[0].addr.split('.').splice(2).join('.');
 app.network = addresses;
 
 //init audio
@@ -82,10 +81,17 @@ switch(process.platform){
 
 var rtAudio = new RtAudio(app.settings.audioapi);
 var devices = rtAudio.getDevices();
+let mcastPrefix = '239.69.';
+let networkAddress = addresses[0].addr.split('.');
+
+//init ptp
+app.ptp.addr = addresses[0].addr;
+ptp.init(addresses[0].addr, 0, function(){});
 
 for(var i = 0; i < devices.length; i++){
 	if(devices[i].inputChannels >= 1 && devices[i].sampleRates.indexOf(48000) !== -1){
-		app.audiodevices.push({id: i, name: devices[i].name, samplerates: devices[i].sampleRates, channels: devices[i].inputChannels});
+		var mcast = mcastPrefix + (networkAddress[2] + i) +  '.' + networkAddress[3];
+		app.audiodevices.push({id: i, name: devices[i].name, samplerates: devices[i].sampleRates, channels: devices[i].inputChannels, multicast: mcast, enabled: false});
 	}
 }
 
@@ -97,10 +103,17 @@ if(app.audiodevices.length == 0){
 	app.settings.device = app.audiodevices[0].id;
 }
 
-let deviceName = '';
-for(var i = 0; i < app.audiodevices.length; i++){
-	if(app.audiodevices[i].id == app.settings.device){
-		deviceName = app.audiodevices[i].name+' @ ';
+setInterval(function(){
+	app.ptp.master = ptp.ptp_master();
+	app.ptp.sync = ptp.is_synced();
+}, 20);
+
+$('#networkdevice').on('change', function(){
+	let value = $('#networkdevice').val();
+
+	if(app.ptp.addr == value){
+		$('#applyNetworkSettings').prop('disabled', true);
+	}else{
+		$('#applyNetworkSettings').prop('disabled', false);
 	}
-}
-app.settings.name = deviceName + os.hostname();
+})

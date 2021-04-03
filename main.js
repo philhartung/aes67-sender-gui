@@ -2,13 +2,13 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 
 const createWindow = function(){
 	const win = new BrowserWindow({
-		width: 400,
+		width: 1240,
 		height: 600,
 		webPreferences: {
 			nodeIntegration: true,
 			devTools: true
 		}
-	})
+	});
 
 	win.loadFile('index.html');
 }
