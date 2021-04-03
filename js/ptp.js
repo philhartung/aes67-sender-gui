@@ -70,17 +70,22 @@ exports.init = function(interface, domain, callback){
 		sync = false;
 		ptpMaster = '';
 
+		ptpClientEvent.setMulticastInterface(addr);
 		ptpClientEvent.addMembership(ptpMulticastAddrs[domain], interface);
+		ptpClientGeneral.setMulticastInterface(addr);
 		ptpClientGeneral.addMembership(ptpMulticastAddrs[domain], interface);
 	}
 
 	addr = interface ? interface : '127.0.0.1';
 	ptp_domain = domain ? domain : 0;
 	cb = callback ? callback : function(){};
+
+	
 }
 
 //event msg client
 ptpClientEvent.on('listening', function() {
+	ptpClientEvent.setMulticastInterface(addr);
 	ptpClientEvent.addMembership(ptpMulticastAddrs[ptp_domain], addr);
 });
 
@@ -139,6 +144,7 @@ ptpClientEvent.on('message', function(buffer, remote) {
 
 //general msg Client
 ptpClientGeneral.on('listening', function() {
+	ptpClientGeneral.setMulticastInterface(addr);
 	ptpClientGeneral.addMembership(ptpMulticastAddrs[ptp_domain], addr);
 });
 

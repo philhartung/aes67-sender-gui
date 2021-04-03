@@ -90,7 +90,7 @@ ptp.init(addresses[0].addr, 0, function(){});
 
 for(var i = 0; i < devices.length; i++){
 	if(devices[i].inputChannels >= 1 && devices[i].sampleRates.indexOf(48000) !== -1){
-		var mcast = mcastPrefix + (networkAddress[2] + i) +  '.' + networkAddress[3];
+		var mcast = mcastPrefix + (parseInt(networkAddress[2]) + i) +  '.' + networkAddress[3];
 		app.audiodevices.push({id: i, name: devices[i].name, samplerates: devices[i].sampleRates, channels: devices[i].inputChannels, multicast: mcast, enabled: false});
 	}
 }
